@@ -605,7 +605,15 @@ def add_keyboard_overlay_to_video(video_path, output_path, actions_timeline):
         return False
 
 def generate_video(args):
-    assert ((args.video_length - 1) // 4 + 1) % 4 == 0, "number of latents must be divisible by 4"
+    # Calculate number of latents
+    num_latents = ((args.video_length - 1) // 4 + 1)
+    # Ensure number of latents is divisible by 4 for optimal processing
+    if num_latents % 4 != 0:
+        num_latents = ((num_latents // 4) + 1) * 4
+        # Adjust video_length to match new num_latents
+        args.video_length = (num_latents - 1) * 4 + 1
+        print(f"Adjusted video_length to {args.video_length} frames to ensure optimal processing")
+    assert num_latents % 4 == 0, "number of latents must be divisible by 4"
     initialize_infer_state(args)
 
     task = 'i2v' if args.image_path else 't2v'
@@ -642,7 +650,9 @@ def generate_video(args):
     if not args.rewrite:
         rank0_log("Warning: Prompt rewriting is disabled. This may affect the quality of generated videos.", "WARNING")
 
-    viewmats, Ks, action = pose_to_input(args.pose, (args.video_length - 1) // 4 + 1)
+    # Calculate number of latents based on adjusted video_length
+    num_latents = ((args.video_length - 1) // 4 + 1)
+    viewmats, Ks, action = pose_to_input(args.pose, num_latents)
 
     if task == 'i2v':
         extra_kwargs['reference_image'] = args.image_path

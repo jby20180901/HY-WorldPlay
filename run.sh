@@ -14,8 +14,16 @@ MODEL_PATH=                   # Path to pretrained hunyuanvideo-1.5 model
 AR_ACTION_MODEL_PATH=         # Path to our HY-World 1.5 autoregressive checkpoints
 BI_ACTION_MODEL_PATH=         # Path to our HY-World 1.5 bidirectional checkpoints
 AR_DISTILL_ACTION_MODEL_PATH= # Path to our HY-World 1.5 autoregressive distilled checkpoints
-POSE='w-31'                   # Camera trajectory: pose string (e.g., 'w-31' means generating [1 + 31] latents) or JSON file path
-NUM_FRAMES=125
+# Video duration in seconds (default: 5 seconds)
+VIDEO_DURATION=5
+# Frames per second (default: 24 FPS)
+FPS=24
+# Calculate total frames
+NUM_FRAMES=$((VIDEO_DURATION * FPS))
+# Calculate required latents (each latent corresponds to 4 frames)
+NUM_LATENTS=$(((NUM_FRAMES - 1) / 4))
+# Camera trajectory: generate forward motion for the entire duration
+POSE="w-${NUM_LATENTS}"                   # Camera trajectory: pose string (e.g., 'w-31' means generating [1 + 31] latents)
 WIDTH=832
 HEIGHT=480
 
@@ -79,4 +87,6 @@ torchrun --nproc_per_node=$N_INFERENCE_GPU generate.py \
   --action_ckpt $AR_DISTILL_ACTION_MODEL_PATH \
   --few_step true \
   --num_inference_steps 4 \
-  --model_type 'ar'
+  --model_type 'ar' \
+  --width $WIDTH \
+  --height $HEIGHT

@@ -25,3 +25,5 @@ pandas
 scipy
 protobuf
 moviepy==1.0.3
+opencv-python
+scikit-image

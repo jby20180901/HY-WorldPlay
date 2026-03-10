@@ -90,3 +90,23 @@ torchrun --nproc_per_node=$N_INFERENCE_GPU generate.py \
   --model_type 'ar' \
   --width $WIDTH \
   --height $HEIGHT
+
+# =============================================
+# Optional: VAE latent wavelet probe experiment
+# =============================================
+# This verifies invertibility, energy concentration, and semantic separability
+# on HunyuanVideo-1.5 VAE latent space.
+#
+# INPUT_VIDEO=./assets/test_probe.mp4
+# PROBE_NUM_FRAMES=17
+# PROBE_TARGET_HEIGHT=480
+# PROBE_OUTDIR=./outputs/wavelet_probe
+# PROBE_DEVICE=cuda
+#
+# python worldplay_vae_wavelet_probe.py \
+#   --model_path $MODEL_PATH \
+#   --input_video $INPUT_VIDEO \
+#   --num_frames $PROBE_NUM_FRAMES \
+#   --target_height $PROBE_TARGET_HEIGHT \
+#   --device $PROBE_DEVICE \
+#   --outdir $PROBE_OUTDIR
